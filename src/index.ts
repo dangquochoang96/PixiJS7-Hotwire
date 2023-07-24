@@ -1,9 +1,8 @@
 import { Manager } from './scene/Manager';
-import { LoaderScene } from './scene/LoaderScene';
 import { BG_COLOR } from './assets';
+import { GameScene } from './game/GameScene';
 
-Manager.initialize(BG_COLOR);
+Manager.initialize(720, 1280, BG_COLOR);
 
 // We no longer need to tell the scene the size because we can ask Manager!
-const loady: LoaderScene = new LoaderScene();
-Manager.changeScene(loady);
+Manager.changeScene(new GameScene());

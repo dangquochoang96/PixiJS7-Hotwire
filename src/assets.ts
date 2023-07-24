@@ -3,14 +3,14 @@ import type { ResolverManifest } from "pixi.js";
 export const manifest:ResolverManifest = {
     bundles: [
         {
-            name : "images",
+            name : "game",
             assets:
             {
                 "Clampy" : "./clampy.png",
             }
         },
         {
-            name : "sound",
+            name : "sounds",
             assets:
             {
                 "whistle" : "",
