@@ -1,6 +1,6 @@
 import { Container, Sprite } from "pixi.js";
 import 'pixi-spine';
-import { IScene, Manager, } from "./Manager";
+import { IScene, Manager, } from "../scene/Manager";
 
 export class GameScene extends Container implements IScene {
     private clampy: Sprite;

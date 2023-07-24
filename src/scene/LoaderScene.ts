@@ -1,38 +1,57 @@
-import { Container, Assets } from "pixi.js";
+import { Container, Assets, Graphics } from "pixi.js";
 import { manifest } from "../assets";
 import { IScene, Manager } from "./Manager";
-import { GameScene } from "./GameScene";
-import { LoadingBarContainer } from "../game/LoadingBar";
+import { GameScene } from "../game/GameScene";
 
 export class LoaderScene extends Container implements IScene {
-    private _loadingBar: LoadingBarContainer;
-    constructor() {
-        super();
-        
-        const loaderBarWidth = 280;
-        this._loadingBar = new LoadingBarContainer(loaderBarWidth, Manager.width, Manager.height);
-        this.addChild(this._loadingBar);
+  // for making our loader graphics...
+  private loaderBar: Container;
+  private loaderBarBoder: Graphics;
+  private loaderBarFill: Graphics;
+  constructor() {
+    super();
 
-        this.initializeLoader().then(() => {
-            this.gameLoaded();
-        })
-    }
+    const loaderBarWidth = Manager.width * 0.8;
 
-    private async initializeLoader(): Promise<void>
-    {
-        await Assets.init({ manifest: manifest });
-        const bundleIds =  manifest.bundles.map(bundle => bundle.name);
-        await Assets.loadBundle(bundleIds, this.downloadProgress.bind(this));
-    }
+    this.loaderBarFill = new Graphics();
+    this.loaderBarFill.beginFill(0x008800, 1);
+    this.loaderBarFill.drawRect(0, 0, loaderBarWidth, 50);
+    this.loaderBarFill.endFill();
+    this.loaderBarFill.scale.x = 0;
 
-    private downloadProgress(progressRatio: number): void {
-        this._loadingBar.scaleProgress(progressRatio);
-    }
+    this.loaderBarBoder = new Graphics();
+    this.loaderBarBoder.lineStyle(10, 0x0, 1);
+    this.loaderBarBoder.drawRect(0, 0, loaderBarWidth, 50);
 
-    private gameLoaded(): void {
-        // Change scene to the game scene!
-        Manager.changeScene(new GameScene());
-    }
-    public update(): void {}
-    public resize(): void {}
+    this.loaderBar = new Container();
+    this.loaderBar.addChild(this.loaderBarFill);
+    this.loaderBar.addChild(this.loaderBarBoder);
+    this.loaderBar.position.x = (Manager.width - this.loaderBar.width) / 2;
+    this.loaderBar.position.y = (Manager.height - this.loaderBar.height) / 2;
+    this.addChild(this.loaderBar);
+
+    this.initializeLoader().then(() => {
+      this.gameLoaded();
+    });
+  }
+
+  private async initializeLoader(): Promise<void> {
+    await Assets.init({ manifest: manifest });
+
+    const bundleIds = manifest.bundles.map((bundle) => bundle.name);
+
+    await Assets.loadBundle(bundleIds, this.downloadProgress.bind(this));
+  }
+
+  private downloadProgress(progressRatio: number): void {
+    this.loaderBarFill.scale.x = progressRatio;
+  }
+
+  private gameLoaded(): void {
+    // Change scene to the game scene!
+    Manager.changeScene(new GameScene());
+  }
+
+  public update(): void {}
+  public resize(): void {}
 }
